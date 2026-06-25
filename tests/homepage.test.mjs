@@ -126,6 +126,7 @@ test("getting started route is handled inside the React app", () => {
 
 test("docs sidebar links directly to commands and key configuration topics", () => {
   for (const anchor of [
+    "cmd-selection",
     "cmd-login",
     "cmd-internet",
     "cmd-language",
@@ -162,13 +163,11 @@ test("docs sidebar links directly to commands and key configuration topics", () 
   assert.match(app, /cmd-rewind/);
   assert.match(app, /cmd-audit/);
   assert.match(app, /cmd-reload-plugins/);
-  assert.match(app, /cmd-wechat/);
   assert.match(app, /Agent\(/);
   assert.match(app, /TaskGet\(/);
   assert.match(app, /TaskOutput\(/);
   assert.match(app, /TaskStop\(/);
   assert.match(app, /config-notify/);
-  assert.match(app, /config-wechat/);
   assert.match(app, /config-hooks/);
   assert.match(app, /config-vigil/);
   assert.match(app, /cleanupPeriodDays/);

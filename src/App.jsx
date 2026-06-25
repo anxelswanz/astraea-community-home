@@ -330,8 +330,8 @@ const commandDocs = [
       en: "Floating selection companion: select text in any app, press a hotkey, and a small Astraea panel pops up so you can explain, summarize, translate, rewrite, or turn it into next actions. In one line — /selection brings quick research and tasks to your fingertips.",
     },
     example: {
-      zh: "/selection          # 后台拉起服务\n/selection setup    # 打印快捷键绑定步骤\n/selection status   # 查看服务状态\n/selection stop     # 关闭服务",
-      en: "/selection          # start the service in the background\n/selection setup    # print hotkey setup steps\n/selection status   # check service status\n/selection stop     # stop the service",
+      zh: "/selection start    # 后台拉起服务\n/selection setup    # 打印快捷键绑定步骤\n/selection status   # 查看服务状态\n/selection stop     # 关闭服务",
+      en: "/selection start    # start the service in the background\n/selection setup    # print hotkey setup steps\n/selection status   # check service status\n/selection stop     # stop the service",
     },
     when: {
       zh: "阅读、研究或处理工作时，想对选中的文字立刻提问，又不想切走当前 app 时使用。",
@@ -346,7 +346,7 @@ const commandDocs = [
       {
         platform: "macOS",
         steps: [
-          { title: { zh: "启动服务", en: "Start the service" }, body: { zh: "在 REPL 里运行 /selection，或在终端运行 astraea selection。服务会在后台自动拉起（无需常驻终端）。", en: "Run /selection in the REPL, or astraea selection in a terminal. The bridge service auto-starts in the background — no terminal to keep open." }, code: "/selection" },
+          { title: { zh: "启动服务", en: "Start the service" }, body: { zh: "在 REPL 里运行 /selection start，或在终端运行 astraea selection start。服务会在后台自动拉起（无需常驻终端）。", en: "Run /selection start in the REPL, or astraea selection start in a terminal. The bridge service auto-starts in the background — no terminal to keep open." }, code: "/selection start" },
           { title: { zh: "拿到绑定命令", en: "Get the bind command" }, body: { zh: "运行 setup，复制它打印出的那行 shell 命令（已填好你本机的绝对路径）。", en: "Run setup and copy the printed shell command (it already has your machine's absolute paths filled in)." }, code: "astraea selection setup" },
           { title: { zh: "在快捷指令里绑定", en: "Bind it in Shortcuts" }, body: { zh: "打开「快捷指令」App → 新建 → 添加「运行 Shell 脚本」动作 → 粘贴上一步的命令 → 指定一个快捷键（如 Option + Space）。", en: "Open the Shortcuts app → new shortcut → add the \"Run Shell Script\" action → paste the command → assign a hotkey (e.g. Option + Space)." } },
           { title: { zh: "授权并使用", en: "Grant access and use it" }, body: { zh: "首次触发时按提示在「系统设置 → 隐私与安全性 → 辅助功能」里授权。之后在任意 app 选中文字、按快捷键，悬浮窗即在光标旁弹出；输入指令，⌘ + ↵ 发送，Esc 关闭。", en: "On first run, grant permission in System Settings → Privacy & Security → Accessibility. Then select text in any app and press your hotkey — the panel pops up by the cursor. Type an instruction, ⌘ + ↵ to send, Esc to close." } },
@@ -355,7 +355,7 @@ const commandDocs = [
       {
         platform: "Windows",
         steps: [
-          { title: { zh: "启动服务", en: "Start the service" }, body: { zh: "在 REPL 里运行 /selection，或在终端运行 astraea selection。服务会在后台自动拉起。", en: "Run /selection in the REPL, or astraea selection in a terminal. The bridge service auto-starts in the background." }, code: "/selection" },
+          { title: { zh: "启动服务", en: "Start the service" }, body: { zh: "在 REPL 里运行 /selection start，或在终端运行 astraea selection start。服务会在后台自动拉起。", en: "Run /selection start in the REPL, or astraea selection start in a terminal. The bridge service auto-starts in the background." }, code: "/selection start" },
           { title: { zh: "拿到绑定命令", en: "Get the bind command" }, body: { zh: "运行 setup，复制它打印出的那行命令。", en: "Run setup and copy the printed command." }, code: "astraea selection setup" },
           { title: { zh: "绑定快捷键（任选其一）", en: "Bind a hotkey (either option)" }, body: { zh: "方案 A（推荐）：装 AutoHotkey v2，新建 .ahk 脚本写入下方热键并运行。方案 B：在桌面新建快捷方式，目标填上一步的命令，右键 → 属性 → 在「快捷键」里设一个组合键（如 Ctrl+Alt+S）。", en: "Option A (recommended): install AutoHotkey v2, put the hotkey below in a .ahk script, and run it. Option B: create a Desktop shortcut whose Target is the command, then right-click → Properties → set a key combo in \"Shortcut key\" (e.g. Ctrl+Alt+S)." }, code: "^!Space::Run '<paste the setup command here>', , 'Hide'" },
           { title: { zh: "使用", en: "Use it" }, body: { zh: "在任意 app 选中文字、按快捷键，一个干净的 Edge/Chrome app 窗口会带着选区弹出；输入指令并发送即可。", en: "Select text in any app and press your hotkey — a clean Edge/Chrome app window opens with your selection. Type an instruction and send." } },
@@ -425,13 +425,6 @@ const commandDocs = [
     purpose: { zh: "管理定时后台任务。", en: "Manage scheduled background tasks." },
     example: "/vigil",
     when: { zh: "用于周期检查、提醒、总结，或之后需要运行的长任务。", en: "Use for recurring checks, reminders, summaries, or long-running work that should happen later." },
-  },
-  {
-    id: "cmd-wechat",
-    command: "/wechat",
-    purpose: { zh: "使用 Astraea 的 WeChat 配置执行聊天总结。", en: "Run a WeChat chat summary using the WeChat settings configured for Astraea." },
-    example: { zh: "/wechat\n# 从 Vigil 面板安排微信总结\n/vigil", en: "/wechat\n# schedule a WeChat summary from the Vigil panel\n/vigil" },
-    when: { zh: "配置好 WeChat 范围和输出目录后，需要读取并总结近期聊天时使用。", en: "Use after configuring WeChat scope and output settings, when you want Astraea to read and summarize recent chats." },
   },
   {
     id: "cmd-mcp",
@@ -685,29 +678,6 @@ OPENAI_MODEL=gpt-4o
     code: `{
   "cleanupPeriodDays": 30
 }`,
-  },
-  {
-    id: "config-wechat",
-    title: { zh: "微信总结设置", en: "WeChat summary settings" },
-    summary: { zh: "WeChat 设置会告诉 Astraea 读取哪些聊天、回看多少天、总结保存到哪里，以及按什么方式整理。", en: "WeChat settings tell Astraea which chats to read, how far back to look, where to save summaries, and how to organize them." },
-    bullets: [
-      { zh: "只想读取指定联系人或群聊时使用 contacts。", en: "Use contacts when you only want named people or groups." },
-      { zh: "想读取最近会话时使用 top。", en: "Use top when you want the most recent conversations." },
-      { zh: "想广泛覆盖时使用 all，并设置 limit。", en: "Use all with a limit when you want broad coverage." },
-      { zh: "organize 可选择 timeline、tasks、decisions、promises、contacts 或 topics 等模式。", en: "Choose organize modes such as timeline, tasks, decisions, promises, contacts, or topics." },
-    ],
-    code: `{
-  "wechat": {
-    "scope": { "type": "contacts", "names": ["妈妈", "项目群"] },
-    "days": 14,
-    "outputDir": "~/Documents/wechat-summary",
-    "organize": ["timeline", "tasks", "decisions"]
-  }
-}
-
-/wechat
-bun run setup:wechat
-bun run wechat:stop`,
   },
   {
     id: "config-hooks",
