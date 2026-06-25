@@ -21,7 +21,7 @@ const pageCopy = {
     gettingStarted: "Getting Started",
     exploreFeatures: "Explore features",
     currentRelease: "Current release",
-    currentReleaseBody: "/init 已上线：Astraea 可以扫描仓库，创建或更新 AGENTS.md / AGENTS.local.md，并把项目命令、架构和约定变成长期上下文。",
+    currentReleaseBody: "/selection 已上线：在任意 app 选中文字、按快捷键唤起 Astraea 悬浮窗——快速研究与任务随手可得，适合学习、调研和日常工作。",
     featuresEyebrow: "Why Astraea",
     featuresTitle: "Why you should use Astraea",
     featuresIntro: "不只是会写代码的聊天框，而是把目标、UI、权限、证据和调度变成工程系统的 agent runtime。",
@@ -68,7 +68,7 @@ const pageCopy = {
     gettingStarted: "Getting Started",
     exploreFeatures: "Explore features",
     currentRelease: "Current release",
-    currentReleaseBody: "/init is live: Astraea can scan a repo, create or update AGENTS.md / AGENTS.local.md, and turn project commands, architecture, and conventions into durable context.",
+    currentReleaseBody: "/selection is live: select text in any app and press a hotkey to summon a floating Astraea panel — quick research and tasks at your fingertips, great for learning, research, and everyday work.",
     featuresEyebrow: "Why Astraea",
     featuresTitle: "Why you should use Astraea",
     featuresIntro: "Not just a coding chatbot: Astraea turns goals, UI, permissions, evidence, and scheduling into an agent runtime.",
@@ -183,6 +183,18 @@ const features = [
 
 const updates = [
   {
+    version: "0.10.3",
+    date: "Jun 25, 2026",
+    title: {
+      zh: "/selection 悬浮选区助手",
+      en: "/selection floating selection companion",
+    },
+    body: {
+      zh: "/selection for quick research and task：在任意 app 选中文字、按快捷键弹出 Astraea 悬浮窗并带入选区，加一句指令即可发送。支持 macOS 原生悬浮面板与 Windows 的 Edge/Chrome app 窗口。",
+      en: "/selection for quick research and task: select text in any app, press a hotkey, and a floating Astraea panel opens with your selection ready — just add a command and send. macOS gets a native panel; Windows gets an Edge/Chrome app window.",
+    },
+  },
+  {
     version: "0.10.1",
     date: "Jun 24, 2026",
     title: {
@@ -228,18 +240,6 @@ const updates = [
     body: {
       zh: "Forge 可以自动放行普通命令，同时敏感路径仍保留 red-line 确认。",
       en: "Forge can auto-allow ordinary commands while sensitive paths keep their red-line confirmation behavior.",
-    },
-  },
-  {
-    version: "0.9.43",
-    date: "Jun 23, 2026",
-    title: {
-      zh: "/goal 支持展开粘贴的多行目标",
-      en: "/goal expands pasted multi-line objectives",
-    },
-    body: {
-      zh: "粘贴内容会在 slash command 解析前展开，让评估器拿到真实目标条件。",
-      en: "Pasted placeholders are expanded before slash-command parsing, so evaluators receive the actual goal conditions.",
     },
   },
 ];
@@ -322,6 +322,47 @@ const installTabs = [
 ];
 
 const commandDocs = [
+  {
+    id: "cmd-selection",
+    command: "/selection",
+    purpose: {
+      zh: "悬浮选区助手：在任意 app 里选中文字，按快捷键弹出 Astraea 小窗，加一句指令即可获得解释、总结、翻译、改写或下一步行动。一句话——/selection 让快速研究与任务随手可得。",
+      en: "Floating selection companion: select text in any app, press a hotkey, and a small Astraea panel pops up so you can explain, summarize, translate, rewrite, or turn it into next actions. In one line — /selection brings quick research and tasks to your fingertips.",
+    },
+    example: {
+      zh: "/selection          # 后台拉起服务\n/selection setup    # 打印快捷键绑定步骤\n/selection status   # 查看服务状态\n/selection stop     # 关闭服务",
+      en: "/selection          # start the service in the background\n/selection setup    # print hotkey setup steps\n/selection status   # check service status\n/selection stop     # stop the service",
+    },
+    when: {
+      zh: "阅读、研究或处理工作时，想对选中的文字立刻提问，又不想切走当前 app 时使用。",
+      en: "Use while reading, researching, or working when you want to ask about selected text without leaving the app you are in.",
+    },
+    details: [
+      { zh: "学习：阅读文档、论文或代码时选中难懂的段落或术语，让 Astraea 用大白话解释。", en: "Learn: select a hard paragraph or term while reading docs, papers, or code and ask Astraea for a plain-language explanation." },
+      { zh: "研究：从网页或 PDF 选中引用、数据或片段，要求总结、核查、翻译或对比。", en: "Research: select a quote, data point, or snippet from a webpage or PDF and ask for a summary, fact-check, translation, or comparison." },
+      { zh: "工作与任务：选中报错日志、邮件草稿或需求，让 Astraea 修复、改写或拆成下一步行动——全程不离开当前 app。", en: "Work and tasks: select an error log, email draft, or spec and have Astraea fix, rewrite, or turn it into next actions — all without leaving the app." },
+    ],
+    platforms: [
+      {
+        platform: "macOS",
+        steps: [
+          { title: { zh: "启动服务", en: "Start the service" }, body: { zh: "在 REPL 里运行 /selection，或在终端运行 astraea selection。服务会在后台自动拉起（无需常驻终端）。", en: "Run /selection in the REPL, or astraea selection in a terminal. The bridge service auto-starts in the background — no terminal to keep open." }, code: "/selection" },
+          { title: { zh: "拿到绑定命令", en: "Get the bind command" }, body: { zh: "运行 setup，复制它打印出的那行 shell 命令（已填好你本机的绝对路径）。", en: "Run setup and copy the printed shell command (it already has your machine's absolute paths filled in)." }, code: "astraea selection setup" },
+          { title: { zh: "在快捷指令里绑定", en: "Bind it in Shortcuts" }, body: { zh: "打开「快捷指令」App → 新建 → 添加「运行 Shell 脚本」动作 → 粘贴上一步的命令 → 指定一个快捷键（如 Option + Space）。", en: "Open the Shortcuts app → new shortcut → add the \"Run Shell Script\" action → paste the command → assign a hotkey (e.g. Option + Space)." } },
+          { title: { zh: "授权并使用", en: "Grant access and use it" }, body: { zh: "首次触发时按提示在「系统设置 → 隐私与安全性 → 辅助功能」里授权。之后在任意 app 选中文字、按快捷键，悬浮窗即在光标旁弹出；输入指令，⌘ + ↵ 发送，Esc 关闭。", en: "On first run, grant permission in System Settings → Privacy & Security → Accessibility. Then select text in any app and press your hotkey — the panel pops up by the cursor. Type an instruction, ⌘ + ↵ to send, Esc to close." } },
+        ],
+      },
+      {
+        platform: "Windows",
+        steps: [
+          { title: { zh: "启动服务", en: "Start the service" }, body: { zh: "在 REPL 里运行 /selection，或在终端运行 astraea selection。服务会在后台自动拉起。", en: "Run /selection in the REPL, or astraea selection in a terminal. The bridge service auto-starts in the background." }, code: "/selection" },
+          { title: { zh: "拿到绑定命令", en: "Get the bind command" }, body: { zh: "运行 setup，复制它打印出的那行命令。", en: "Run setup and copy the printed command." }, code: "astraea selection setup" },
+          { title: { zh: "绑定快捷键（任选其一）", en: "Bind a hotkey (either option)" }, body: { zh: "方案 A（推荐）：装 AutoHotkey v2，新建 .ahk 脚本写入下方热键并运行。方案 B：在桌面新建快捷方式，目标填上一步的命令，右键 → 属性 → 在「快捷键」里设一个组合键（如 Ctrl+Alt+S）。", en: "Option A (recommended): install AutoHotkey v2, put the hotkey below in a .ahk script, and run it. Option B: create a Desktop shortcut whose Target is the command, then right-click → Properties → set a key combo in \"Shortcut key\" (e.g. Ctrl+Alt+S)." }, code: "^!Space::Run '<paste the setup command here>', , 'Hide'" },
+          { title: { zh: "使用", en: "Use it" }, body: { zh: "在任意 app 选中文字、按快捷键，一个干净的 Edge/Chrome app 窗口会带着选区弹出；输入指令并发送即可。", en: "Select text in any app and press your hotkey — a clean Edge/Chrome app window opens with your selection. Type an instruction and send." } },
+        ],
+      },
+    ],
+  },
   {
     id: "cmd-init",
     command: "/init",
@@ -1339,6 +1380,24 @@ function DocsPage({ language }) {
                             </li>
                           ))}
                         </ul>
+                      ) : null}
+                      {item.platforms ? (
+                        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                          {item.platforms.map((platform) => (
+                            <div className="min-w-0 rounded-lg border border-white/10 bg-white/[0.03] p-4" key={platform.platform}>
+                              <h4 className="mb-3 text-lg font-black text-astraea-amber">{platform.platform}</h4>
+                              <ol className="grid gap-3">
+                                {platform.steps.map((step, i) => (
+                                  <li className="min-w-0" key={textFor(step.title, language)}>
+                                    <h5 className="mb-1 font-extrabold text-astraea-ink">{i + 1}. {textFor(step.title, language)}</h5>
+                                    <p className="mb-2 break-words leading-7 text-astraea-muted">{textFor(step.body, language)}</p>
+                                    {step.code ? <CodeBlock>{textFor(step.code, language)}</CodeBlock> : null}
+                                  </li>
+                                ))}
+                              </ol>
+                            </div>
+                          ))}
+                        </div>
                       ) : null}
                 </div>
               ))}
