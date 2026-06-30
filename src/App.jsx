@@ -59,6 +59,12 @@ const pageCopy = {
     configurationIntro: "这些是安装后最常需要找到的文件和目录。下面的路径就是配置 Astraea、排查状态存储位置时的实用地图。",
     scriptsTitle: "一次性 CLI 与项目脚本",
     scriptsIntro: "REPL 最适合对话式协作；CLI 更适合脚本、管道输入或一次性回答。",
+    designPhilosophyNavLink: "设计哲学",
+    backToGettingStarted: "← 快速开始",
+    dpEyebrow: "Design Philosophy",
+    dpNavTitle: "设计哲学",
+    dpTitle: "设计哲学",
+    dpIntro: "这里记录 Astraea 在工程取舍上的核心理念 —— 为什么这样设计，而不是别的方式。每一篇都聚焦一个独立的设计主题，并会随系统演进持续补充。以下是目前已经成型的部分。",
   },
   en: {
     nav: { home: "Home", docs: "Docs", github: "GitHub", official: "Official" },
@@ -106,6 +112,12 @@ const pageCopy = {
     configurationIntro: "These are the files and directories users most often need to find after installation. The paths below are the practical map for configuring Astraea and debugging where state is stored.",
     scriptsTitle: "One-shot CLI and project scripts",
     scriptsIntro: "The REPL is best for conversation. The CLI is better for scripts, pipes, or one-off answers.",
+    designPhilosophyNavLink: "Design Philosophy",
+    backToGettingStarted: "← Getting Started",
+    dpEyebrow: "Design Philosophy",
+    dpNavTitle: "Design Philosophy",
+    dpTitle: "Design Philosophy",
+    dpIntro: "These notes record the core ideas behind Astraea's engineering trade-offs — why it is built this way and not another. Each entry focuses on one self-contained design theme and keeps growing as the system evolves. Below are the parts that have taken shape so far.",
   },
 };
 
@@ -1227,6 +1239,13 @@ function DocsPage({ language }) {
         <aside className="hidden lg:block">
           <div className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto rounded-lg border border-white/15 bg-[#080e16]/80 p-5 text-sm text-astraea-muted shadow-panel backdrop-blur-xl">
             <p className="mb-4 font-extrabold text-astraea-ink">{copy.docsNavTitle}</p>
+            <a
+              className="mb-4 flex items-center justify-between rounded-lg border border-astraea-green/40 bg-astraea-green/10 px-3 py-2 font-extrabold text-astraea-ink transition hover:bg-astraea-green/20"
+              href="/docs/design-philosophy"
+            >
+              {copy.designPhilosophyNavLink}
+              <span aria-hidden="true">→</span>
+            </a>
             <details className="docs-nav-group" open>
               <summary>{copy.startHere}</summary>
               <div className="border-l border-white/10 pl-3">
@@ -1475,6 +1494,453 @@ function DocsPage({ language }) {
   );
 }
 
+const designPhilosophyNav = [
+  {
+    summary: "Task Graph",
+    overviewId: "task-graph",
+    items: [
+      { id: "task-graph-definition", label: { zh: "定义与状态模型", en: "Definition & state model" } },
+      { id: "task-graph-walkthrough", label: { zh: "一个完整例子", en: "A worked example" } },
+      { id: "task-graph-features", label: { zh: "三个核心机制", en: "Three core mechanisms" } },
+      { id: "task-graph-verification", label: { zh: "如何验证它有效", en: "How we know it works" } },
+    ],
+  },
+  {
+    summary: "Long Task",
+    overviewId: "long-task",
+    items: [
+      { id: "long-task-evidence-critique", label: { zh: "Evidence Critique", en: "Evidence Critique" } },
+      { id: "long-task-evidence-ledger", label: { zh: "证据账本", en: "Evidence Ledger" } },
+    ],
+  },
+];
+
+function PhilosophyQuote({ children }) {
+  return (
+    <blockquote className="mb-6 border-l-4 border-astraea-green/60 bg-white/[0.03] py-3 pl-4 pr-3 text-lg font-bold italic leading-8 text-astraea-ink">
+      {children}
+    </blockquote>
+  );
+}
+
+function PhilosophySubheading({ id, eyebrow, children }) {
+  return (
+    <div id={id} className="scroll-mt-28">
+      {eyebrow ? <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-astraea-cyan">{eyebrow}</p> : null}
+      <h3 className="mb-4 text-2xl font-black text-astraea-amber">{children}</h3>
+    </div>
+  );
+}
+
+function DesignPhilosophyPage({ language }) {
+  const copy = pageCopy[language];
+
+  return (
+    <section className="px-5 py-16 sm:px-8 lg:px-24">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[260px_minmax(0,1fr)]">
+        <aside className="hidden lg:block">
+          <div className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto rounded-lg border border-white/15 bg-[#080e16]/80 p-5 text-sm text-astraea-muted shadow-panel backdrop-blur-xl">
+            <a
+              className="mb-4 flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 font-extrabold text-astraea-ink transition hover:bg-white/10"
+              href="/docs/getting-started"
+            >
+              {copy.backToGettingStarted}
+            </a>
+            <p className="mb-4 font-extrabold text-astraea-ink">{copy.dpNavTitle}</p>
+            {designPhilosophyNav.map((group) => (
+              <details className="docs-nav-group" open key={group.summary}>
+                <summary>{group.summary}</summary>
+                <div className="border-l border-white/10 pl-3">
+                  {group.items.map((item) => (
+                    <a className="block py-1.5 hover:text-astraea-ink" href={`#${item.id}`} key={item.id}>
+                      {textFor(item.label, language)}
+                    </a>
+                  ))}
+                </div>
+              </details>
+            ))}
+          </div>
+        </aside>
+
+        <article className="min-w-0 rounded-lg border border-white/15 bg-[#080e16]/82 p-6 shadow-panel backdrop-blur-xl sm:p-9">
+          <p className="mb-4 text-xs font-extrabold uppercase text-astraea-green">{copy.dpEyebrow}</p>
+          <h1 className="mb-5 text-[clamp(3rem,8vw,6rem)] font-black leading-none text-astraea-ink">{copy.dpTitle}</h1>
+          <p className="max-w-3xl text-lg leading-8 text-astraea-muted">{copy.dpIntro}</p>
+
+          <DocsSection id="task-graph" title="Task Graph">
+            <PhilosophyQuote>
+              {textFor(
+                {
+                  zh: "用 TaskCreate 把复杂工作拆成一张动态的任务图，而不是一份写死的脚本。",
+                  en: "Break down complex work with TaskCreate as a dynamic task graph, not a fixed script.",
+                },
+                language,
+              )}
+            </PhilosophyQuote>
+
+            <div className="grid gap-8">
+              <div>
+                <PhilosophySubheading id="task-graph-definition">
+                  {textFor({ zh: "定义与状态模型", en: "Definition & state model" }, language)}
+                </PhilosophySubheading>
+                <p className="mb-5 leading-8 text-astraea-muted">
+                  {textFor(
+                    {
+                      zh: "每个任务是一个小型状态机，节点之间用依赖边连成一张有向无环图。模型不是按一条写死的脚本往下跑，而是维护这张图——通过三个工具读写它：",
+                      en: "Each task is a small state machine, and the nodes are wired into a directed acyclic graph by dependency edges. The model does not run down a fixed script; it maintains this graph, reading and writing it through three tools:",
+                    },
+                    language,
+                  )}
+                </p>
+                <ul className="mb-5 grid gap-3 text-astraea-muted">
+                  {[
+                    {
+                      api: "TaskCreate",
+                      desc: { zh: "创建带有显式依赖与验收标准的任务节点。", en: "Creates task nodes with explicit dependencies and acceptance criteria." },
+                    },
+                    {
+                      api: "TaskUpdate",
+                      desc: { zh: "推进任务状态、提交证据、修改依赖。", en: "Advances task status, provides evidence, and modifies dependencies." },
+                    },
+                    {
+                      api: "TaskGet / TaskList",
+                      desc: { zh: "查询任务的当前状态。", en: "Queries the current state of tasks." },
+                    },
+                  ].map((row) => (
+                    <li className="leading-7" key={row.api}>
+                      <code className="font-mono font-black text-astraea-cyan">{row.api}</code>
+                      <span className="text-astraea-muted"> — {textFor(row.desc, language)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="leading-8 text-astraea-muted">
+                  <strong className="text-astraea-green">{textFor({ zh: "触发条件：", en: "Trigger conditions: " }, language)}</strong>
+                  {textFor(
+                    {
+                      zh: "当一个请求涉及超过 3 个可拆分步骤、跨越多个文件，或预计会运行很久时，模型应先用 TaskCreate 建好任务图，再按依赖顺序逐个执行。",
+                      en: "when a request involves more than three separable steps, spans multiple files, or is expected to run for a long time, the model first builds a task graph with TaskCreate, then executes the tasks in dependency order.",
+                    },
+                    language,
+                  )}
+                </p>
+                <p className="mb-3 mt-5 leading-7 text-astraea-muted">
+                  {textFor(
+                    { zh: "每个节点在六个状态之间流转，转移规则是固定的：", en: "Each node moves between six states along fixed transitions:" },
+                    language,
+                  )}
+                </p>
+                <CodeBlock>
+                  {textFor(
+                    {
+                      zh: "pending       就绪，可以开工\nblocked       有依赖未完成，被自动阻塞\nin_progress   进行中\ncompleted     已完成（必须带证据）\nfailed        做不下去\ninvalidated   曾完成，但证据已失效，需修复\n\n状态机：\n  pending → in_progress → completed | failed\n  completed → invalidated → in_progress    （失效后修复）\n  blocked ⇄ pending                          （由依赖自动判定）",
+                      en: "pending       ready to start\nblocked       a dependency is unmet, auto-blocked\nin_progress   being worked on\ncompleted     done (evidence required)\nfailed        cannot proceed\ninvalidated   was completed, but its evidence broke; needs repair\n\nState machine:\n  pending → in_progress → completed | failed\n  completed → invalidated → in_progress    (repair after invalidation)\n  blocked ⇄ pending                          (decided automatically by dependencies)",
+                    },
+                    language,
+                  )}
+                </CodeBlock>
+              </div>
+
+              <div>
+                <PhilosophySubheading id="task-graph-walkthrough">
+                  {textFor({ zh: "一个完整例子：地基与砌墙", en: "A worked example: foundation and walls" }, language)}
+                </PhilosophySubheading>
+                <p className="mb-3 leading-8 text-astraea-muted">
+                  {textFor(
+                    {
+                      zh: "下面是一段真实的调用序列——两个任务「打地基」和「砌墙」，砌墙依赖地基。注意系统在每一步是怎么拦住捷径的（报错信息直接取自源码）：",
+                      en: "Here is a real call sequence — two tasks, “pour foundation” and “build walls”, where the walls depend on the foundation. Watch how the system blocks every shortcut at each step (the error messages are taken verbatim from the source):",
+                    },
+                    language,
+                  )}
+                </p>
+                <CodeBlock>
+                  {textFor(
+                    {
+                      zh: 'TaskCreate(subject: "打地基")                          → task-1  status: pending\nTaskCreate(subject: "砌墙", dependencies: ["task-1"])  → task-2  status: blocked   ← 依赖未满足，自动阻塞\n\n# 想跳过地基直接砌墙：\nTaskUpdate(taskId: task-2, status: "in_progress")\n  ✗ Task cannot start while a dependency is incomplete.\n\n# 想把地基标完成，却不给证据：\nTaskUpdate(taskId: task-1, status: "completed")\n  ✗ Cannot complete task; missing evidence for: criterion-1.\n\n# 给出证据后完成地基：\nTaskUpdate(taskId: task-1, status: "completed",\n           evidence: [{ criterionId: "criterion-1", … }])\n  ✓ task-1 completed\n  → reconcile：task-2 自动 blocked → pending（解锁，现在才能开工）',
+                      en: 'TaskCreate(subject: "Pour foundation")                       → task-1  status: pending\nTaskCreate(subject: "Build walls", dependencies: ["task-1"]) → task-2  status: blocked   ← dependency unmet, auto-blocked\n\n# Try to skip the foundation and start the walls:\nTaskUpdate(taskId: task-2, status: "in_progress")\n  ✗ Task cannot start while a dependency is incomplete.\n\n# Try to mark the foundation complete with no evidence:\nTaskUpdate(taskId: task-1, status: "completed")\n  ✗ Cannot complete task; missing evidence for: criterion-1.\n\n# Complete the foundation with evidence:\nTaskUpdate(taskId: task-1, status: "completed",\n           evidence: [{ criterionId: "criterion-1", … }])\n  ✓ task-1 completed\n  → reconcile: task-2 auto blocked → pending (unlocked, only now can it start)',
+                    },
+                    language,
+                  )}
+                </CodeBlock>
+              </div>
+
+              <div>
+                <PhilosophySubheading id="task-graph-features">
+                  {textFor({ zh: "三个核心机制", en: "Three core mechanisms" }, language)}
+                </PhilosophySubheading>
+
+                <div className="grid gap-4">
+                  <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
+                    <h4 className="mb-3 text-lg font-black text-astraea-ink">
+                      1. {textFor({ zh: "上游影响下游", en: "Upstream affects downstream" }, language)}
+                    </h4>
+                    <p className="mb-4 leading-7 text-astraea-muted">
+                      {textFor(
+                        {
+                          zh: "任务图是有方向的：改动会沿依赖关系往下游传播。传播由 reconcileTaskGraph 完成——它反复扫描直到图稳定（不动点），失效只沿依赖边走，不会波及无关任务。",
+                          en: "The graph is directional: a change propagates downstream along the dependencies. Propagation is done by reconcileTaskGraph — it rescans until the graph is stable (a fixed point), and invalidation travels only along dependency edges, never spilling onto unrelated tasks.",
+                        },
+                        language,
+                      )}
+                    </p>
+                    <p className="mb-2 leading-7 text-astraea-muted">
+                      <strong className="text-astraea-green">{textFor({ zh: "场景一", en: "Scenario one" }, language)}</strong>
+                      {" — "}
+                      {textFor(
+                        {
+                          zh: "你逐层完成 A → B → C，D 也独立完成了。随后你发现 A 的证据失效了（比如 provider 文档更新了），于是手动把 A 标为 invalidated：",
+                          en: "you finish A → B → C layer by layer, and D is done independently. Then you find A's evidence no longer holds (say the provider docs changed), so you manually mark A as invalidated:",
+                        },
+                        language,
+                      )}
+                    </p>
+                    <CodeBlock>{'TaskUpdate(taskId: A, status: "invalidated", notes: "Provider documentation changed.")'}</CodeBlock>
+                    <p className="mb-2 mt-3 leading-7 text-astraea-muted">
+                      {textFor({ zh: "reconcileTaskGraph 自动向下传播：", en: "reconcileTaskGraph then propagates downstream automatically:" }, language)}
+                    </p>
+                    <CodeBlock>
+                      {textFor(
+                        {
+                          zh: "A: invalidated   ← 你手动触发\nB: invalidated   ← 依赖 A，自动级联\nC: invalidated   ← 依赖 B，自动级联\nD: completed     ← 无依赖，不受影响",
+                          en: "A: invalidated   ← you triggered this\nB: invalidated   ← depends on A, cascades automatically\nC: invalidated   ← depends on B, cascades automatically\nD: completed     ← no dependency, unaffected",
+                        },
+                        language,
+                      )}
+                    </CodeBlock>
+                    <p className="mb-2 mt-4 leading-7 text-astraea-muted">
+                      <strong className="text-astraea-green">{textFor({ zh: "场景二", en: "Scenario two" }, language)}</strong>
+                      {" — "}
+                      {textFor(
+                        {
+                          zh: "反过来，当上游完成、依赖被满足后，被阻塞的下游会自动解除阻塞：",
+                          en: "conversely, once an upstream task completes and its dependency is satisfied, a blocked downstream task is released automatically:",
+                        },
+                        language,
+                      )}
+                    </p>
+                    <CodeBlock>
+                      {textFor(
+                        {
+                          zh: "A: completed\nB: pending    ← A 的依赖满足了，blocked 自动解除\nC: blocked    ← B 还没完成，C 仍被阻塞",
+                          en: "A: completed\nB: pending    ← A's dependency is satisfied, no longer blocked\nC: blocked    ← B is not done yet, so C stays blocked",
+                        },
+                        language,
+                      )}
+                    </CodeBlock>
+                  </div>
+
+                  <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
+                    <h4 className="mb-3 text-lg font-black text-astraea-ink">
+                      2. {textFor({ zh: "每个完成的任务都需要证据", en: "Every completed task needs evidence" }, language)}
+                    </h4>
+                    <p className="mb-4 leading-7 text-astraea-muted">
+                      {textFor(
+                        {
+                          zh: "每一个标记为 completed 的任务都必须附带证据。证据不是一句『应该好了』，而是一份可核查的结构——它声明了什么、来源是什么、可信度多高、依赖哪些假设：",
+                          en: "Every task marked completed must carry evidence. Evidence is not a casual “should be fine” — it is a checkable record of what is claimed, where it comes from, how confident it is, and what assumptions it rests on:",
+                        },
+                        language,
+                      )}
+                    </p>
+                    <CodeBlock>
+                      {textFor(
+                        {
+                          zh: '{\n  "criterionId": "criterion-1",\n  "claim": "登录向导在已有 DeepSeek Key 时显示复用选项",\n  "source": "bun test src/ui/LoginWizard.test.tsx，退出码为 0",\n  "confidence": "high",\n  "assumptions": [\n    "该测试调用的是生产环境中的 LoginWizard 组件"\n  ]\n}',
+                          en: '{\n  "criterionId": "criterion-1",\n  "claim": "Login wizard shows the reuse option when a DeepSeek key already exists",\n  "source": "bun test src/ui/LoginWizard.test.tsx, exit code 0",\n  "confidence": "high",\n  "assumptions": [\n    "The test exercises the production LoginWizard component"\n  ]\n}',
+                        },
+                        language,
+                      )}
+                    </CodeBlock>
+                  </div>
+
+                  <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
+                    <h4 className="mb-3 text-lg font-black text-astraea-ink">
+                      3. {textFor({ zh: "失效是怎么触发的？", en: "How is invalidation triggered?" }, language)}
+                    </h4>
+                    <PhilosophyQuote>
+                      {textFor(
+                        {
+                          zh: "如果某个证据后来被证伪，就把对应任务标为 invalidated，让依赖它的结果在本地一并失效、随后被修复。",
+                          en: "If evidence later becomes false, mark its task invalidated so dependent results are invalidated locally and can be repaired.",
+                        },
+                        language,
+                      )}
+                    </PhilosophyQuote>
+                    <p className="mb-4 leading-7 text-astraea-muted">
+                      {textFor(
+                        {
+                          zh: "由模型自己触发，而且是机会性的，不是定时复查：系统不会在每次完成任务后回扫历史证据。触发点是后续工作又碰到了那条证据的来源（source）——同一个文件、同一条命令、同一个接口。下面是一条 A → B → C 依赖链的真实例子：",
+                          en: "The model triggers this itself, and it is opportunistic rather than a scheduled re-check: the system never re-scans historical evidence after each completion. The trigger is later work touching that evidence's source again — the same file, command, or endpoint. Here is a real example along an A → B → C dependency chain:",
+                        },
+                        language,
+                      )}
+                    </p>
+                    <CodeBlock>
+                      {textFor(
+                        {
+                          zh: 'A「确认 users 表结构」completed\n   evidence.claim:  "users.id 是自增 BIGINT"\n   evidence.source: "psql \\d users 的输出"\nB「生成 ORM 模型」依赖 A，completed       → User 实体 id 字段为 number\nC「写 getUserById 接口」依赖 B，completed → getUserById(id: number)\n\n# 做 C 的收尾验证时，集成测试报类型错：DB 返回的 id 是字符串。\n# 模型回查，重跑 A 证据的 source：\npsql \\d users\n  id | uuid | not null     ← 中途有人跑过迁移，BIGINT 已改成 uuid\n\n# 这一刻 C 的工作再次碰到了 A 的 source，新结果证伪了 A 的 claim：\nTaskUpdate(taskId: A, status: "invalidated", notes: "users.id 已迁移为 uuid")\n\n→ reconcile 沿依赖边级联：\n   A: invalidated   ← 模型手动触发\n   B: invalidated   ← 依赖 A，自动级联\n   C: invalidated   ← 依赖 B，自动级联\n\n→ 修复（invalidated → in_progress）：\n   A 重新确认 uuid → B 重生成 id:string → C 改成 getUserById(id: string)',
+                          en: 'A "Confirm users table schema" completed\n   evidence.claim:  "users.id is an auto-increment BIGINT"\n   evidence.source: "output of psql \\d users"\nB "Generate ORM model" depends on A, completed       → User entity id is number\nC "Write getUserById endpoint" depends on B, completed → getUserById(id: number)\n\n# While verifying C, an integration test throws a type error: the DB id is a string.\n# The model investigates and re-runs A\'s evidence source:\npsql \\d users\n  id | uuid | not null     ← someone ran a migration; BIGINT is now uuid\n\n# At this moment C\'s work touched A\'s source again, falsifying A\'s claim:\nTaskUpdate(taskId: A, status: "invalidated", notes: "users.id migrated to uuid")\n\n→ reconcile cascades along dependency edges:\n   A: invalidated   ← triggered by the model\n   B: invalidated   ← depends on A, cascades automatically\n   C: invalidated   ← depends on B, cascades automatically\n\n→ repair (invalidated → in_progress):\n   A re-confirms uuid → B regenerates id:string → C becomes getUserById(id: string)',
+                        },
+                        language,
+                      )}
+                    </CodeBlock>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <PhilosophySubheading id="task-graph-verification">
+                  {textFor({ zh: "如何验证它有效", en: "How we know it works" }, language)}
+                </PhilosophySubheading>
+                <p className="mb-5 leading-8 text-astraea-muted">
+                  {textFor(
+                    {
+                      zh: "一张只供模型「讲故事」的任务图毫无价值。Task Graph 的有效性来自三道由代码强制执行的守卫——它们让「完成」无法靠嘴说出来：",
+                      en: "A task graph that merely lets the model narrate a story is worthless. The effectiveness of Task Graph comes from three guards enforced in code — they make “done” something you cannot simply assert:",
+                    },
+                    language,
+                  )}
+                </p>
+                <div className="mb-6 grid gap-4">
+                  {[
+                    {
+                      title: { zh: "依赖守卫", en: "Dependency guard" },
+                      desc: {
+                        zh: "依赖未完成，任务就进不了 in_progress——incompleteDependencies 会拦住它。捷径根本开不了工。",
+                        en: "A task cannot enter in_progress while a dependency is incomplete — incompleteDependencies stops it. Shortcuts never start.",
+                      },
+                    },
+                    {
+                      title: { zh: "证据守卫", en: "Evidence guard" },
+                      desc: {
+                        zh: "只要有一条验收标准缺证据，任务就进不了 completed——missingEvidence 会拒绝。「我觉得好了」不算完成。",
+                        en: "If even one acceptance criterion lacks evidence, the task cannot enter completed — missingEvidence rejects it. “I think it works” is not done.",
+                      },
+                    },
+                    {
+                      title: { zh: "无环保证", en: "Acyclic guarantee" },
+                      desc: {
+                        zh: "依赖一旦成环立即被拒——validateDependencies 用 DFS 检测回路，保证这张图永远可以拓扑推进。",
+                        en: "A dependency cycle is rejected on sight — validateDependencies uses a DFS to detect loops, keeping the graph always topologically advanceable.",
+                      },
+                    },
+                  ].map((guard) => (
+                    <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5" key={textFor(guard.title, language)}>
+                      <h4 className="mb-2 text-lg font-black text-astraea-ink">{textFor(guard.title, language)}</h4>
+                      <p className="leading-7 text-astraea-muted">{textFor(guard.desc, language)}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mb-3 leading-8 text-astraea-muted">
+                  {textFor(
+                    {
+                      zh: "这些守卫不是文档里的承诺，而是有测试覆盖的行为。src/tools/taskGraph.test.ts 用真实任务图验证了：依赖未满足时砌墙保持 blocked、上游失效会级联失效下游但不影响无关任务、依赖成环被拒。亲手复现：",
+                      en: "These guards are not promises in a doc — they are tested behavior. src/tools/taskGraph.test.ts verifies on a real graph that walls stay blocked while their dependency is unmet, that invalidating an upstream task cascades to its descendants but leaves independent tasks untouched, and that a dependency cycle is rejected. Reproduce it yourself:",
+                    },
+                    language,
+                  )}
+                </p>
+                <CodeBlock>{"bun test src/tools/taskGraph.test.ts"}</CodeBlock>
+              </div>
+            </div>
+          </DocsSection>
+
+          <DocsSection id="long-task" title="Long Task">
+            <p className="mb-6 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "长任务最大的风险不是做不完，而是『看起来做完了』。Astraea 用三层检查把真实结果和自我安慰区分开。",
+                  en: "The biggest risk in a long task is not running out of steps — it is work that merely looks done. Astraea separates real results from wishful thinking with three layers of checks.",
+                },
+                language,
+              )}
+            </p>
+
+            <PhilosophySubheading id="long-task-evidence-critique">Evidence Critique</PhilosophySubheading>
+            <CodeBlock>
+              {textFor(
+                {
+                  zh: "每一步：  Task Graph 强制检查 acceptanceCriteria + evidence\n整件事：  /goal evaluator 检查最终完成条件与对话中的真实结果\n收尾前：  evidence critique 检查这些真实结果是否足够可靠",
+                  en: "Each step:    Task Graph enforces acceptanceCriteria + evidence\nWhole job:    the /goal evaluator checks final done-conditions against real results in the conversation\nBefore wrap:  evidence critique checks whether those real results are reliable enough",
+                },
+                language,
+              )}
+            </CodeBlock>
+
+            <p className="mb-4 mt-6 leading-8 text-astraea-muted">
+              {textFor(
+                { zh: "收尾前的 evidence critique 主要盯三类问题：", en: "The closing evidence critique watches for three kinds of problems:" },
+                language,
+              )}
+            </p>
+            <div className="grid gap-4">
+              {[
+                {
+                  tag: "insufficient_evidence",
+                  desc: {
+                    zh: "缺少外部证据——没有命令输出、没有 render 结果，连测试都没跑，只有一句『应该好了』。",
+                    en: "Missing external evidence — no command output, no render result; not even a test was run, just an “it should be fine.”",
+                  },
+                },
+                {
+                  tag: "risk_coverage_gap",
+                  desc: {
+                    zh: "有检查但遗漏了关键失败路径——测试跑了也过了，但只测了开心路径。",
+                    en: "Checks exist but miss the critical failure paths — tests ran and passed, but only the happy path was covered.",
+                  },
+                },
+                {
+                  tag: "goal_shift",
+                  desc: {
+                    zh: "模型偷偷降低验证标准（与第 1 阶段的反作弊呼应）——把测试删掉、跳过，或把断言改成 expect(true).toBe(true)。",
+                    en: "The model quietly lowers the bar (echoing the stage-1 anti-cheating) — deleting or skipping tests, or rewriting an assertion into expect(true).toBe(true).",
+                  },
+                },
+              ].map((row) => (
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5" key={row.tag}>
+                  <code className="mb-2 block font-mono text-lg font-black text-astraea-amber">{row.tag}</code>
+                  <p className="leading-7 text-astraea-muted">{textFor(row.desc, language)}</p>
+                </div>
+              ))}
+            </div>
+
+            <PhilosophySubheading id="long-task-evidence-ledger" eyebrow={textFor({ zh: "改进", en: "Refinement" }, language)}>
+              {textFor({ zh: "证据账本：让审查官看证物，而不是听口供", en: "The Evidence Ledger: let the critic see exhibits, not testimony" }, language)}
+            </PhilosophySubheading>
+            <p className="mb-4 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "上面这道 evidence critique 有一个早期的盲点。它原本是凭「对话记录」来判断证据够不够硬的——可是对话很长以后，越早的内容越会被挤出可阅读的窗口。于是一个常见的尴尬出现了：任务真的在第三步就跑过了测试、拿到了 exit 0，但等到收尾审查时，那条证据早已滚出视野，审查官看不到，只能保守地判『证据不足』，逼着已经做完的工作再绕一圈。",
+                  en: "This evidence critique had an early blind spot. It used to judge the strength of the evidence from the conversation log — but in a long task, the older the content, the more likely it is pushed out of the readable window. A familiar awkward case follows: the task really did run the tests and get exit 0 back at step three, but by closing time that proof has scrolled out of sight. The critic cannot see it, conservatively rules “insufficient evidence,” and forces already-finished work to loop again.",
+                },
+                language,
+              )}
+            </p>
+            <p className="mb-4 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "问题的根子在于：审查官读的是一段会被裁剪的『口供』，而不是原始『证物』。其实 Astraea 在每个工具跑完时，就把它的真实输出（exit code、测试结果、命令回显）原封不动地存进了一本不会被裁剪的台账。改进很直接——收尾审查时，把这本台账作为第一手证物直接交给审查官，并明确告诉它：以台账为准，对话记录只是补充。",
+                  en: "The root cause: the critic was reading a trimmable “testimony,” not the original “exhibits.” In fact, the moment each tool finishes, Astraea already files its real output — exit codes, test results, command echoes — verbatim into a ledger that never gets trimmed. The fix is direct: at closing time, hand that ledger to the critic as first-hand evidence and tell it plainly — the ledger is ground truth, the conversation log is only supplementary.",
+                },
+                language,
+              )}
+            </p>
+            <p className="mb-4 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "台账并非把所有输出一股脑塞进去——它优先保留最近的记录，单条只留结论所在的尾部，整体设有上限，以免拖慢判断。一句话概括这个设计：采集证据和评判证据，本该用的是同一份真值。",
+                  en: "The ledger does not dump everything in — it keeps the most recent records first, keeps only the tail of each entry where conclusions live, and caps the whole thing so judgment stays fast. In one line: gathering evidence and judging evidence should draw on the same source of truth.",
+                },
+                language,
+              )}
+            </p>
+          </DocsSection>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function HomePage({ language }) {
   return (
     <>
@@ -1486,7 +1952,9 @@ function HomePage({ language }) {
 }
 
 export default function App() {
-  const isDocsRoute = window.location.pathname === "/docs/getting-started";
+  const pathname = window.location.pathname;
+  const isPhilosophyRoute = pathname === "/docs/design-philosophy";
+  const isDocsRoute = pathname === "/docs/getting-started";
   const [language, setLanguage] = useState(() => {
     return window.localStorage.getItem("astraea-language") === "en" ? "en" : "zh";
   });
@@ -1500,7 +1968,15 @@ export default function App() {
     <>
       <BackgroundScene />
       <Header language={language} onLanguageChange={handleLanguageChange} />
-      <main>{isDocsRoute ? <DocsPage language={language} /> : <HomePage language={language} />}</main>
+      <main>
+        {isPhilosophyRoute ? (
+          <DesignPhilosophyPage language={language} />
+        ) : isDocsRoute ? (
+          <DocsPage language={language} />
+        ) : (
+          <HomePage language={language} />
+        )}
+      </main>
     </>
   );
 }
