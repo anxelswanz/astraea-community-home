@@ -1908,73 +1908,127 @@ function DesignPhilosophyPage({ language }) {
             <PhilosophySubheading id="long-task-evidence-ledger" eyebrow={textFor({ zh: "改进", en: "Refinement" }, language)}>
               {textFor({ zh: "证据账本：让审查官看证物，而不是听口供", en: "The Evidence Ledger: let the critic see exhibits, not testimony" }, language)}
             </PhilosophySubheading>
-            <p className="mb-4 leading-8 text-astraea-muted">
+            <p className="mb-5 leading-8 text-astraea-muted">
               {textFor(
                 {
-                  zh: "上面这道 evidence critique 有一个早期的盲点。它原本是凭「对话记录」来判断证据够不够硬的——可是对话很长以后，越早的内容越会被挤出可阅读的窗口。于是一个常见的尴尬出现了：任务真的在第三步就跑过了测试、拿到了 exit 0，但等到收尾审查时，那条证据早已滚出视野，审查官看不到，只能保守地判『证据不足』，逼着已经做完的工作再绕一圈。",
-                  en: "This evidence critique had an early blind spot. It used to judge the strength of the evidence from the conversation log — but in a long task, the older the content, the more likely it is pushed out of the readable window. A familiar awkward case follows: the task really did run the tests and get exit 0 back at step three, but by closing time that proof has scrolled out of sight. The critic cannot see it, conservatively rules “insufficient evidence,” and forces already-finished work to loop again.",
-                },
-                language,
-              )}
-            </p>
-            <p className="mb-4 leading-8 text-astraea-muted">
-              {textFor(
-                {
-                  zh: "问题的根子在于：审查官读的是一段会被裁剪的『口供』，而不是原始『证物』。其实 Astraea 在每个工具跑完时，就把它的真实输出（exit code、测试结果、命令回显）原封不动地存进了一本不会被裁剪的台账。改进很直接——收尾审查时，把这本台账作为第一手证物直接交给审查官，并明确告诉它：以台账为准，对话记录只是补充。",
-                  en: "The root cause: the critic was reading a trimmable “testimony,” not the original “exhibits.” In fact, the moment each tool finishes, Astraea already files its real output — exit codes, test results, command echoes — verbatim into a ledger that never gets trimmed. The fix is direct: at closing time, hand that ledger to the critic as first-hand evidence and tell it plainly — the ledger is ground truth, the conversation log is only supplementary.",
-                },
-                language,
-              )}
-            </p>
-            <p className="mb-4 leading-8 text-astraea-muted">
-              {textFor(
-                {
-                  zh: "台账并非把所有输出一股脑塞进去——它优先保留最近的记录，单条只留结论所在的尾部，整体设有上限，以免拖慢判断。一句话概括这个设计：采集证据和评判证据，本该用的是同一份真值。",
-                  en: "The ledger does not dump everything in — it keeps the most recent records first, keeps only the tail of each entry where conclusions live, and caps the whole thing so judgment stays fast. In one line: gathering evidence and judging evidence should draw on the same source of truth.",
+                  zh: "上面这道 evidence critique 有一个早期的盲点：它凭「对话记录」判断证据够不够硬，但对话一长，越早的内容越会被挤出可阅读的窗口。根子在于——审查官读的是会被裁剪的『口供』，而不是原始『证物』。",
+                  en: "This evidence critique had an early blind spot: it judged the strength of the evidence from the conversation log, but the longer the conversation, the more the early content gets pushed out of the readable window. The root cause — the critic was reading trimmable “testimony,” not the original “exhibits.”",
                 },
                 language,
               )}
             </p>
 
+            <CodeBlock>
+              {textFor(
+                {
+                  zh: "长任务收尾时，审查官看到的证据：\n\n旧 ── 对话记录（截断到最近 ~16k 字符）\n        第 3 步  npm test → exit 0   ✗ 已滚出窗口，看不见\n        裁决：证据不足 → 已完成的工作被迫重做一遍\n\n新 ── 证据账本（每个工具的真实输出，永不裁剪）\n        [Bash] npm test  → exit 0    ✓ 仍在\n        [Bash] tsc       → 0 errors  ✓ 仍在\n        + 对话记录（作为补充）\n        裁决：证据充分 → 正常收尾",
+                  en: "What the critic sees when a long task wraps up:\n\nOLD ── conversation log (truncated to the last ~16k chars)\n         step 3  npm test → exit 0   ✗ scrolled out, invisible\n         verdict: insufficient evidence → finished work redone\n\nNEW ── evidence ledger (each tool's real output, never trimmed)\n         [Bash] npm test → exit 0     ✓ still there\n         [Bash] tsc      → 0 errors   ✓ still there\n         + conversation log (as a supplement)\n         verdict: evidence sufficient → wraps up normally",
+                },
+                language,
+              )}
+            </CodeBlock>
+
+            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] p-5">
+              <h4 className="mb-3 text-lg font-black text-astraea-ink">
+                {textFor({ zh: "台账怎么取舍", en: "How the ledger is curated" }, language)}
+              </h4>
+              <p className="leading-7 text-astraea-muted">
+                {textFor(
+                  {
+                    zh: "其实 Astraea 在每个工具跑完时，就把它的真实输出（exit code、测试结果、命令回显）原封不动地存了下来。收尾审查时把这本台账作为第一手证物交给审查官，并明确告诉它「以台账为准，对话记录只是补充」。台账不会一股脑全塞——",
+                    en: "In fact, the moment each tool finishes, Astraea files its real output — exit codes, test results, command echoes — verbatim. At closing time that ledger is handed to the critic as first-hand evidence, told plainly: the ledger is ground truth, the log is only a supplement. It does not dump everything in —",
+                  },
+                  language,
+                )}
+              </p>
+              <ul className="mt-3 grid gap-2 text-astraea-muted">
+                {[
+                  { zh: "优先保留最近的记录（最可能证明完成条件）", en: "keeps the most recent records first (most likely to prove the done-condition)" },
+                  { zh: "单条只留结论所在的尾部（exit code 通常在末尾）", en: "keeps only the tail of each entry where the conclusion lives (the exit code is usually last)" },
+                  { zh: "整体设字符上限，以免拖慢判断", en: "caps the total size so judgment stays fast" },
+                ].map((item, i) => (
+                  <li className="leading-7" key={i}>
+                    <span className="font-mono font-black text-astraea-cyan">·</span> {textFor(item, language)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <PhilosophyQuote>
+              {textFor(
+                {
+                  zh: "采集证据和评判证据，本该用的是同一份真值。",
+                  en: "Gathering evidence and judging evidence should draw on the same source of truth.",
+                },
+                language,
+              )}
+            </PhilosophyQuote>
+
             <PhilosophySubheading id="long-task-replan" eyebrow={textFor({ zh: "改进", en: "Refinement" }, language)}>
               {textFor({ zh: "计划坏了，要主动叫人回来修", en: "When the plan breaks, actively call someone back to fix it" }, language)}
             </PhilosophySubheading>
-            <p className="mb-4 leading-8 text-astraea-muted">
+            <p className="mb-5 leading-8 text-astraea-muted">
               {textFor(
                 {
-                  zh: "任务图是一张活的图：任务之间有依赖关系，状态会随进展流动。当一个任务失败、或它依赖的上游被改动而连带让已完成的结果『失效』时，任务图能准确地把这些坏掉的节点标记出来。但标记只是『发现问题』——过去它就停在这里，指望模型在后面某一轮自己注意到、自己想起来回去修。",
-                  en: "The task graph is a living graph: tasks have dependencies, and statuses flow as work progresses. When a task fails — or when an upstream it depends on is changed and that retroactively invalidates an already-finished result — the graph accurately flags those broken nodes. But flagging is only “noticing the problem.” It used to stop right there, hoping the model would, some turn later, notice on its own and remember to go back and fix it.",
+                  zh: "任务图能准确地把坏掉的节点标记出来——任务失败，或上游被改动而连带让已完成的结果『失效』。但标记只是『发现问题』。过去它就停在这里，指望模型某一轮自己想起来回去修；现实里模型很容易在收尾时把一个失败任务静默丢下。",
+                  en: "The task graph accurately flags broken nodes — a task fails, or an upstream change retroactively invalidates an already-finished result. But flagging is only “noticing the problem.” It used to stop there, hoping the model would remember to go back; in practice the model easily drops a failed task silently at closing time.",
                 },
                 language,
               )}
             </p>
-            <p className="mb-4 leading-8 text-astraea-muted">
+
+            <CodeBlock>
               {textFor(
                 {
-                  zh: "现实里，被动等待往往等不来：模型很容易在收尾时遗漏一个失败的任务，把它静默地丢下。所以我们把『发现』补上了『行动』的那一跳——在 Astraea 真正打算结束、交还控制权之前，先扫一眼任务图：只要还有坏掉的节点没交代清楚，就把它们摆到模型面前，再多跑一轮。",
-                  en: "In practice, passive waiting often never pays off: it is easy for the model to miss a failed task at closing time and silently drop it. So we added the missing leap from “noticing” to “acting” — right before Astraea intends to finish and hand control back, it first glances at the task graph: as long as a broken node remains unaccounted for, it puts those nodes in front of the model and runs one more turn.",
+                  zh: "任务图标记了坏节点之后……\n\n旧 ── Astraea 收尾 ──→ 直接交还控制权\n        failed 的任务被静默丢下\n\n新 ── Astraea 收尾前 ──→ 先扫一眼任务图\n        还有坏节点没交代？ → 摆到模型面前，再跑一轮\n        全清了？           → 正常交还控制权",
+                  en: "After the task graph has flagged broken nodes…\n\nOLD ── Astraea wraps up ──→ hands control straight back\n         the failed task is silently dropped\n\nNEW ── before Astraea wraps up ──→ glance at the task graph first\n         broken node unaccounted for? → put it in front of the model, one more turn\n         all clear?                   → hand control back normally",
                 },
                 language,
               )}
-            </p>
-            <p className="mb-4 leading-8 text-astraea-muted">
+            </CodeBlock>
+
+            <p className="mb-4 mt-6 leading-8 text-astraea-muted">
               {textFor(
-                {
-                  zh: "两类坏节点，给的指令不一样：失败的任务，要求先复盘，再决定是重试、换个做法、还是拆成更小的子任务；被连带失效的任务，会点名是哪个上游变了，要求重新跑一遍验证、重新交出证据——而不是默认它还成立。",
-                  en: "The two kinds of broken nodes get different instructions. For a failed task, it asks for a postmortem first, then a decision: retry, change approach, or decompose into smaller subtasks. For a task invalidated by a change upstream, it names exactly which upstream moved and asks the work to be re-verified and its evidence re-submitted — rather than assuming it still holds.",
-                },
+                { zh: "两类坏节点，给的指令不一样：", en: "The two kinds of broken nodes get different instructions:" },
                 language,
               )}
             </p>
-            <p className="mb-4 leading-8 text-astraea-muted">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                {
+                  tag: "failed",
+                  title: { zh: "先复盘，再决定怎么走", en: "Postmortem first, then decide" },
+                  desc: {
+                    zh: "要求先诊断失败原因，再决定是重试、换个做法、还是拆成更小的子任务——而不是把失败咽下去。",
+                    en: "Asks for a diagnosis first, then a choice: retry, change approach, or decompose into smaller subtasks — instead of swallowing the failure.",
+                  },
+                },
+                {
+                  tag: "invalidated",
+                  title: { zh: "点名上游，重新验证", en: "Name the upstream, re-verify" },
+                  desc: {
+                    zh: "会点名是哪个上游变了导致证据失效，要求重新跑一遍验证、经 TaskUpdate 重新交出证据——而不是默认它还成立。",
+                    en: "Names exactly which upstream moved and made the evidence stale, asking for a re-run and fresh evidence via TaskUpdate — rather than assuming it still holds.",
+                  },
+                },
+              ].map((row) => (
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5" key={row.tag}>
+                  <code className="mb-2 block font-mono text-lg font-black text-astraea-amber">{row.tag}</code>
+                  <p className="mb-2 font-extrabold text-astraea-ink">{textFor(row.title, language)}</p>
+                  <p className="leading-7 text-astraea-muted">{textFor(row.desc, language)}</p>
+                </div>
+              ))}
+            </div>
+
+            <PhilosophyQuote>
               {textFor(
                 {
-                  zh: "这道提醒和待办收尾提醒是同一套克制原则：只在主线对话里生效、整段任务只提醒一次、并有轮次上限兜底，绝不会把模型困在『修了又被叫回来修』的死循环里。它的目的只有一个——让计划的破损不再被悄悄遗忘。",
-                  en: "This nudge follows the same restraint as the todo closing reminder: it only applies in the main conversation, fires at most once per task stretch, and is backed by a turn cap — it will never trap the model in a loop of “fix it, get called back, fix it again.” Its only goal: make sure a broken plan is never quietly forgotten.",
+                  zh: "和待办收尾提醒同一套克制：只在主线生效、整段任务只提醒一次、有轮次上限兜底——绝不把模型困在『修了又被叫回来修』的死循环里。目的只有一个：让计划的破损不再被悄悄遗忘。",
+                  en: "The same restraint as the todo closing reminder: main conversation only, at most once per task stretch, backed by a turn cap — never trapping the model in a “fix it, get called back, fix it again” loop. One goal only: a broken plan is never quietly forgotten.",
                 },
                 language,
               )}
-            </p>
+            </PhilosophyQuote>
           </DocsSection>
         </article>
       </div>
