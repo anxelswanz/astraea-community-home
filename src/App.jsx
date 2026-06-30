@@ -1511,6 +1511,7 @@ const designPhilosophyNav = [
     items: [
       { id: "long-task-evidence-critique", label: { zh: "Evidence Critique", en: "Evidence Critique" } },
       { id: "long-task-evidence-ledger", label: { zh: "证据账本", en: "Evidence Ledger" } },
+      { id: "long-task-replan", label: { zh: "计划自愈", en: "Plan self-healing" } },
     ],
   },
 ];
@@ -1930,6 +1931,46 @@ function DesignPhilosophyPage({ language }) {
                 {
                   zh: "台账并非把所有输出一股脑塞进去——它优先保留最近的记录，单条只留结论所在的尾部，整体设有上限，以免拖慢判断。一句话概括这个设计：采集证据和评判证据，本该用的是同一份真值。",
                   en: "The ledger does not dump everything in — it keeps the most recent records first, keeps only the tail of each entry where conclusions live, and caps the whole thing so judgment stays fast. In one line: gathering evidence and judging evidence should draw on the same source of truth.",
+                },
+                language,
+              )}
+            </p>
+
+            <PhilosophySubheading id="long-task-replan" eyebrow={textFor({ zh: "改进", en: "Refinement" }, language)}>
+              {textFor({ zh: "计划坏了，要主动叫人回来修", en: "When the plan breaks, actively call someone back to fix it" }, language)}
+            </PhilosophySubheading>
+            <p className="mb-4 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "任务图是一张活的图：任务之间有依赖关系，状态会随进展流动。当一个任务失败、或它依赖的上游被改动而连带让已完成的结果『失效』时，任务图能准确地把这些坏掉的节点标记出来。但标记只是『发现问题』——过去它就停在这里，指望模型在后面某一轮自己注意到、自己想起来回去修。",
+                  en: "The task graph is a living graph: tasks have dependencies, and statuses flow as work progresses. When a task fails — or when an upstream it depends on is changed and that retroactively invalidates an already-finished result — the graph accurately flags those broken nodes. But flagging is only “noticing the problem.” It used to stop right there, hoping the model would, some turn later, notice on its own and remember to go back and fix it.",
+                },
+                language,
+              )}
+            </p>
+            <p className="mb-4 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "现实里，被动等待往往等不来：模型很容易在收尾时遗漏一个失败的任务，把它静默地丢下。所以我们把『发现』补上了『行动』的那一跳——在 Astraea 真正打算结束、交还控制权之前，先扫一眼任务图：只要还有坏掉的节点没交代清楚，就把它们摆到模型面前，再多跑一轮。",
+                  en: "In practice, passive waiting often never pays off: it is easy for the model to miss a failed task at closing time and silently drop it. So we added the missing leap from “noticing” to “acting” — right before Astraea intends to finish and hand control back, it first glances at the task graph: as long as a broken node remains unaccounted for, it puts those nodes in front of the model and runs one more turn.",
+                },
+                language,
+              )}
+            </p>
+            <p className="mb-4 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "两类坏节点，给的指令不一样：失败的任务，要求先复盘，再决定是重试、换个做法、还是拆成更小的子任务；被连带失效的任务，会点名是哪个上游变了，要求重新跑一遍验证、重新交出证据——而不是默认它还成立。",
+                  en: "The two kinds of broken nodes get different instructions. For a failed task, it asks for a postmortem first, then a decision: retry, change approach, or decompose into smaller subtasks. For a task invalidated by a change upstream, it names exactly which upstream moved and asks the work to be re-verified and its evidence re-submitted — rather than assuming it still holds.",
+                },
+                language,
+              )}
+            </p>
+            <p className="mb-4 leading-8 text-astraea-muted">
+              {textFor(
+                {
+                  zh: "这道提醒和待办收尾提醒是同一套克制原则：只在主线对话里生效、整段任务只提醒一次、并有轮次上限兜底，绝不会把模型困在『修了又被叫回来修』的死循环里。它的目的只有一个——让计划的破损不再被悄悄遗忘。",
+                  en: "This nudge follows the same restraint as the todo closing reminder: it only applies in the main conversation, fires at most once per task stretch, and is backed by a turn cap — it will never trap the model in a loop of “fix it, get called back, fix it again.” Its only goal: make sure a broken plan is never quietly forgotten.",
                 },
                 language,
               )}
